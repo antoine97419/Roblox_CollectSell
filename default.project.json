@@ -9,9 +9,6 @@
       },
       "Packages": {
         "$path": "Packages"
-      },
-      "Remotes" :{
-        "$path": "src/Remotes"
       }
     },
 

@@ -35,6 +35,8 @@ local function playerInit(player)
 				PlayerData.loadOk[playerUserID] = true
 				if snapshot ~= nil then --Vérification que la sauvegarde existe
 					PlayerData.data[playerUserID] = snapshot
+					--Rajouter la création folder lorsque le joeur rejoin avec sauvegarde
+
 					return
 				end
 			end
@@ -48,6 +50,22 @@ local function playerInit(player)
 			Inv = {},
 		}
 	end
+	local folder = player:FindForChild("PlayerDataUI")
+	if not folder then
+		folder = Instance.new("Folder")
+		folder.Name = "PlayerDataUI"
+		folder.Parent = player
+
+		local coinValue = Instance.new("IntValue")
+		coinValue.Name = "coinValue"
+		coinValue.Value = 0
+		coinValue.Parent = folder
+
+		local itemCount = Instance.new("IntValue")
+		itemCount.Name = "itemCount"
+		itemCount.Value = 0
+		itemCount.Parent = folder
+	end
 end
 
 --Quand un joueur réucpère un item
@@ -57,6 +75,15 @@ local function addItems(player, itemsName)
 		PlayerData.data[playerUserID].Inv[itemsName] = 0
 	end
 	PlayerData.data[playerUserID].Inv[itemsName] = PlayerData.data[playerUserID].Inv[itemsName] + 1
+	--Ajouts du folder pour update l'UI
+	local folder = player:FindFirstChild("PlayerDataUI")
+	if not folder then
+		return "Error with UI updating please try to reload"
+	end
+	local itemCount = folder:FindFirstChild("itemCount")
+	--Pour affichage UI client
+	itemCount.Value = PlayerData.data[playerUserID].Inv[itemsName]
+	return
 end
 
 --Quand un joueur vend un item
@@ -70,6 +97,16 @@ local function sellItems(player, itemsName)
 	end
 	PlayerData.data[playerUserID].Inv[itemsName] = PlayerData.data[playerUserID].Inv[itemsName] - 1
 	PlayerData.data[playerUserID].coin = PlayerData.data[playerUserID].coin + Config.itemsPrice[itemsName]
+	--Ajouts du folder pour update l'UI
+	local folder = player:FindFirstChild("PlayerDataUI")
+	if not folder then
+		return
+	end
+	local itemCount = folder:FindFirstChild("itemCount")
+	local coinValue = folder:FindFirstChild("coinValue")
+	--Pour affichage UI client
+	itemCount.Value = PlayerData.data[playerUserID].Inv[itemsName]
+	coinValue.Value = PlayerData.data[playerUserID].coin
 	return "Item sold successfully"
 end
 
